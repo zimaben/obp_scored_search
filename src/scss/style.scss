@@ -1,0 +1,77 @@
+//Globals
+@import "colors";
+@import "typography";
+@import "variables";
+@import "404";
+
+//Bootstrap media queries
+@import "sm_only";
+@import "lg_only";
+@import "md_only";
+@import "xs_only";
+@import "xl_only";
+
+//Building Blocks
+@import 'cards';
+@import 'cards_md';
+@import "cards_lg";
+@import "forms";
+@import "forms_md";
+@import "forms_lg";
+@import "layout";
+@import "layout_md";
+@import "layout_lg";
+@import "search";
+@import "search_md";
+@import "search_lg";
+@import "menu";
+@import "menu_md";
+@import "menu_lg";
+
+//Modules and Components
+@import "components";
+@import "components_md";
+@import "components_lg";
+@import "modules_header";
+@import "modules_header_md";
+@import "modules_header_lg";
+@import "modules_header_datepicker";
+@import "modules_myinterests";
+
+
+/* imported variables list 
+* - colors
+$primary
+$primary-dark
+$primary-light
+$primary2
+$primary2-dark
+$primary2-light
+$accent
+accent-dark
+$accent-light
+$accent2
+$accent2-dark
+$accent2-light
+* - typography
+$sans
+$serif
+$h-biggest
+$p-biggest
+$headline
+$headline-medium
+$headline-smaller
+$headline-small
+$body
+$body-medium
+$body-smaller
+*/
+
+
+
+
+
+
+
+
+
