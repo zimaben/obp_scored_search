@@ -49,7 +49,7 @@ class Admin extends \ScoringEngine{
     public static function obp_search_score_add(){
         \add_meta_box(
             'obp-search-score',
-            __( 'Ratings', self::text_domain ),
+            __( 'Scores', self::text_domain ),
             array( get_class(), 'obp_search_score_callback'),
             self::$scored_posttypes,
             'side',
@@ -58,8 +58,16 @@ class Admin extends \ScoringEngine{
 
     }
     public static function obp_search_score_callback(){
+        //Do we have post ID?
         $post_id = isset($_GET['post']) ? $_GET['post'] : false;
-        if($post_id){
+        //If not, is it a new post?
+        if(!$post_id){
+            if( $_SERVER['PHP_SELF'] == '/wp-admin/post-new.php'){
+                global $post;
+                $post_id = $post->ID;
+            }
+        }
+        if($post_id && isset($post_id)){
 
             $score_terms = \get_terms( array( 
                 'taxonomy'      => 'obp_scores',
@@ -94,6 +102,10 @@ class Admin extends \ScoringEngine{
             } //end search score terms
             echo '</div>';
         }   
+        else 
+            {
+                echo 'Sorry, we couldn\'t find the Scores for this item.';
+            }
     }
     public static function obp_search_score_save( $post_id ){
 

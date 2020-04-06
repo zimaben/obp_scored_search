@@ -40,7 +40,7 @@ if ( ! class_exists( 'ScoringEngine' ) ) {
         const js_domain = 'scoring_engine';
 
         //Plugin Options
-        static $scored_posttypes = array('activities','stays'); 
+        static $scored_posttypes = array('posttype_1', 'posttype_2'); //MUST BE ARRAY
         static $score_base = 5; //base 10 is a scale between 0 and 10 etc.
         static $allow_halves = true; // turn half steps on/off
         static $access_level = array( 'administrator' ); // roles that can edit scores

@@ -29,16 +29,16 @@ class Setup extends \ScoringEngine {
 
         $scores_labels = array(
 
-            'name'              => _x( 'Scores', 'scores', \SearchEngine::text_domain ),
-            'singular_name'     => _x( 'Score', 'score', \SearchEngine::text_domain ),
-            'all_items'         => __( 'All Scores', \SearchEngine::text_domain ),
-            'parent_item'       => __( 'Parent Score', \SearchEngine::text_domain ),
-            'parent_item_colon' => __( 'Parent Score:', \SearchEngine::text_domain),
-            'edit_item'         => __( 'Edit Score', \SearchEngine::text_domain ),
-            'update_item'       => __( 'Update Score', \SearchEngine::text_domain ),
-            'add_new_item'      => __( 'Add New Score', \SearchEngine::text_domain ),
-            'new_item_name'     => __( 'New Score', \SearchEngine::text_domain ),
-            'menu_name'         => __( 'Scores', \SearchEngine::text_domain ),
+            'name'              => _x( 'Scores', 'scores', \ScoringEngine::text_domain ),
+            'singular_name'     => _x( 'Score', 'score', \ScoringEngine::text_domain ),
+            'all_items'         => __( 'All Scores', \ScoringEngine::text_domain ),
+            'parent_item'       => __( 'Parent Score', \ScoringEngine::text_domain ),
+            'parent_item_colon' => __( 'Parent Score:', \ScoringEngine::text_domain),
+            'edit_item'         => __( 'Edit Score', \ScoringEngine::text_domain ),
+            'update_item'       => __( 'Update Score', \ScoringEngine::text_domain ),
+            'add_new_item'      => __( 'Add New Score', \ScoringEngine::text_domain ),
+            'new_item_name'     => __( 'New Score', \ScoringEngine::text_domain ),
+            'menu_name'         => __( 'Scores', \ScoringEngine::text_domain ),
         );
         $scores_args = array(
             'hierarchical'          => true,
@@ -52,9 +52,10 @@ class Setup extends \ScoringEngine {
             'meta_box_cb'       => false,
         );
 
-        /* ADDING THEME-CSS & THEME-JS AS DEPENDENCIES ENSURES PROPER FRAMEWORK DEPENDENCY MANAGEMENT WITHOUT TRACKING ADDITIONAL BOOTSTRAP FILES */
+        /*  */
         $this->register_taxonomy( 'obp_scores', self::$scored_posttypes, $scores_args )
-             ->addScript( self::text_domain , self::get_plugin_url('/build/js/' . self::text_domain . '.js'), array('theme-js'), self::version, true );
+             ->addScript( self::text_domain , self::get_plugin_url('/build/js/' . self::text_domain . '.js'), array('theme-js'), self::version, true )
+             ->addStyle( self::text_domain , self::get_plugin_url('/build/css/' . self::text_domain . '.css'), array('theme-css'), self::version );
 
     }
     private function actionAddMeta($function)
@@ -189,7 +190,7 @@ class Setup extends \ScoringEngine {
     return $this;
     }
 
-    public function save_meta_box()
+    public function save_meta_box() //this is generic, see the admin setup page for real save functions
     {
         //Bail if we don't know the postid
         if( !isset($post_id) && isset($_POST['ID'] ) )
@@ -198,7 +199,7 @@ class Setup extends \ScoringEngine {
 
         } else if(!isset($post_id) && !isset($_POST['ID']) ) return;
         // Bail if not our content types
-        if ( 'stays' !== $_POST['post_type'] && 'activities' !== $_POST['post_type'] ) return $post_id;
+        if ( !in_array($_POST['post_type'], self::$scored_posttypes ) ) return $post_id;
         // Check if our nonce is set.
         if ( !isset( $_POST['user_id_metabox_nonce'] ) ) return $post_id;
 
