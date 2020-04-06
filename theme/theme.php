@@ -58,6 +58,7 @@ class ScoreTheme extends \ScoringEngine {
         ?>
         <script>
             var containerid = "<?php echo $obp_args['container_id'] ?>" ;
+            var loadingimg = "<?php echo self::$logo_url ?>";
             jQuery.ajax({
                 type : "post",
                 dataType : "json",
@@ -67,8 +68,11 @@ class ScoreTheme extends \ScoringEngine {
                          obpargs: <?php echo json_encode( $obp_args ) ?> ,
                          nonce: obp_ajax_data.obp_ajax_nonce,
                          postid: obp_ajax_data.post_id, },
+                beforeSend: function () { 
+                        render_loading_graphic( containerid, loadingimg ) },
                 success: function(response) {
                     if(response.type == "success") {
+                        stop_loading_graphic ( containerid );
                         console.log(response);
                         jQuery.each(response, function(index, item) {
 

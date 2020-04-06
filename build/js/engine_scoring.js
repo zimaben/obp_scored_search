@@ -16,6 +16,39 @@ function render_related_posts( $post, containerid ){
    }
 }
 
+function render_loading_graphic( containerid, imageurl ){
+   var div = document.createElement('div');
+   div.classList.add( 'lds-dual-ring' );
+   if ( validIMGstring( imageurl ) ) {
+      var markup = '<img src="' + imageurl + '" />';
+      div.innerHTML = markup;
+   }
+   document.getElementById(containerid).appendChild(div)   
+}
+function destroy_loading_graphic( containerid ){
+   var spinners = document.getElementById(containerid).getElementsByClassName("lds-dual-ring");
+   while( spinners.length > 0 ) {
+      spinners[0].remove();
+   }
+    
+}
+
+function validIMGstring(str) {
+   var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+     '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+     '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+     '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+     '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+     '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+   var validURL = !!pattern.test(str);
+   if( validURL ){
+      var allowed_extensions = ["png", "jpg", "gif", "jpeg", "svg", "bmp"]; //being generous with the .bmp
+      var ext = str.split('.').pop();
+      return allowed_extensions.includes(ext);
+   } else { return false;}
+
+}
+
 
 /* MAP of an example return object to render
  * 

@@ -54,8 +54,8 @@ class Setup extends \ScoringEngine {
 
         /*  */
         $this->register_taxonomy( 'obp_scores', self::$scored_posttypes, $scores_args )
-             ->addScript( self::text_domain , self::get_plugin_url('/build/js/' . self::text_domain . '.js'), array('theme-js'), self::version, true )
-             ->addStyle( self::text_domain , self::get_plugin_url('/build/css/' . self::text_domain . '.css'), array('theme-css'), self::version );
+             ->addScript( self::js_domain , self::get_plugin_url('/build/js/' . self::text_domain . '.js'), array('theme-js'), self::version, true )
+             ->addStyle( self::js_domain , self::get_plugin_url('/build/css/' . self::text_domain . '.css'), array('theme-css'), self::version );
 
     }
     private function actionAddMeta($function)
