@@ -225,7 +225,6 @@ class Ajax extends \ScoringEngine{
 
     public static function do_obp_scored_search(){
         #validation happens before ajax request is made so no need to check if the arguments are missing
-        error_log(print_r($_POST, true));
         if ( !\wp_verify_nonce( $_POST['nonce'], "obp-ajax-data-nonce")) {
 
             $response = array( 'type' => 'failure', 'message' => 'do_obp_scored_search function failed nonce verification');
@@ -236,8 +235,7 @@ class Ajax extends \ScoringEngine{
 
         $the_args = unserialize(base64_decode( $_POST["args"] ));
         $obp_args = unserialize(base64_decode( $_POST['obpargs'] ));
-        error_log(print_r($the_args, true));
-        error_log(print_r($obp_args, true));
+
         $the_search = \get_posts( $the_args  );
         $related_score = self::get_scores( $obp_args['post_id'] );
 
