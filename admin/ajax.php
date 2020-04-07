@@ -225,6 +225,7 @@ class Ajax extends \ScoringEngine{
 
     public static function do_obp_scored_search(){
         #validation happens before ajax request is made so no need to check if the arguments are missing
+        error_log(print_r($_POST, true));
         if ( !\wp_verify_nonce( $_POST['nonce'], "obp-ajax-data-nonce")) {
 
             $response = array( 'type' => 'failure', 'message' => 'do_obp_scored_search function failed nonce verification');
@@ -232,9 +233,13 @@ class Ajax extends \ScoringEngine{
             wp_die();
             exit;
          }  
-        $the_search = \get_posts( $_POST["args"] );
-        
-        $related_score = self::get_scores( $_POST['obpargs']['post_id'] );
+
+        $the_args = unserialize(base64_decode( $_POST["args"] ));
+        $obp_args = unserialize(base64_decode( $_POST['obpargs'] ));
+        error_log(print_r($the_args, true));
+        error_log(print_r($obp_args, true));
+        $the_search = \get_posts( $the_args  );
+        $related_score = self::get_scores( $obp_args['post_id'] );
 
         if( empty($related_score ) )
         {
@@ -242,12 +247,12 @@ class Ajax extends \ScoringEngine{
             
             {
             
-                error_log( 'OBP Related Score attempted for post_id:'.$_POST['obpargs']['post_id'].' but there are no scores for the post.'  );
+                error_log( 'OBP Related Score attempted for post_id:'.$obp_args['post_id'].' but there are no scores for the post.'  );
             
             }
-            if( isset($_POST['obpargs']['maximum_posts']))
+            if( isset($obp_args['maximum_posts']))
             {
-                $the_search = array_slice($the_search, 0, intval( $_POST['obpargs']['maximum_posts'] ) ); 
+                $the_search = array_slice($the_search, 0, intval( $obp_args['maximum_posts'] ) ); 
             }
             $the_search['type'] = "success";
             
@@ -255,18 +260,18 @@ class Ajax extends \ScoringEngine{
             
             wp_die();  //ajax calls, like surf nazis, must die
         }
-        $searchtype = isset($_POST["obpargs"]["searchtype"]) ? $_POST["obpargs"]["searchtype"] : 'not_set';
+        $searchtype = isset($obp_args["searchtype"]) ? $obp_args["searchtype"] : 'not_set';
         switch ( $searchtype ) {
             
             case "best":
             
-                $new_results = self::sort_related_best( $the_search, $related_score, $_POST['obpargs']['post_id'] );
+                $new_results = self::sort_related_best( $the_search, $related_score, $obp_args['post_id'] );
             
                 break;
             
             case "closest":
               
-                $new_results = self::sort_related_closest( $the_search, $related_score, $_POST['obpargs']['post_id'] );
+                $new_results = self::sort_related_closest( $the_search, $related_score, $obp_args['post_id'] );
               
                 break;
 
@@ -274,11 +279,11 @@ class Ajax extends \ScoringEngine{
                 
                 $function_name = 'sort_related_'.self::$default_search;
                 
-                $new_results = self::$function_name( $the_search, $related_score, $_POST['obpargs']['post_id'] ); #PHP will attempt to execute a variable with parens as a function
+                $new_results = self::$function_name( $the_search, $related_score, $obp_args['post_id'] ); #PHP will attempt to execute a variable with parens as a function
         }
-        if( isset($_POST['obpargs']['maximum_posts']))
+        if( isset($obp_args['maximum_posts']))
         {
-            $new_results = array_slice($new_results, 0, intval( $_POST['obpargs']['maximum_posts'] ) ); 
+            $new_results = array_slice($new_results, 0, intval( $obp_args['maximum_posts'] ) ); 
         }
         $new_results['type'] = "success";
         echo json_encode( $new_results );

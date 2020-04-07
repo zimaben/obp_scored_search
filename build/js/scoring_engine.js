@@ -1,14 +1,14 @@
-function render_related_posts( $post, containerid ){
-   if($post !== 'success') { //don't attempt to render the success message
+function render_related_posts( post, containerid ){
+   if( post !== 'success') { //don't attempt to render the success message
         var div = document.createElement('div');
     
-        div.classList.add( 'card', 'col-6', 'col-sm-4', 'col-md-3', 'card-' + $post.post_type );
+        div.classList.add( 'card', 'col-6', 'col-sm-4', 'col-md-3', 'card-' + post.post_type );
     
-        div.id = 'post-' + $post.ID;
+        div.id = 'post-' + post.ID;
     
-        var markup = '<a href="' + $post.post_url + '"><div class="card-body" style="background:url('+ $post.thumbnail_url +') center/cover">';
+        var markup = '<a href="' + post.post_url + '"><div class="card-body obp_card" style="background:url('+ post.thumbnail_url +') center/cover">';
     
-        markup += '<h5 class="card-title">'+ $post.post_title +'</h5></div>'; 
+        markup += '<h5 class="card-title">'+ post.post_title +'</h5></div>'; 
     
         div.innerHTML = markup;
         console.log( containerid );
@@ -25,7 +25,7 @@ function render_loading_graphic( containerid, imageurl ){
    }
    document.getElementById(containerid).appendChild(div)   
 }
-function destroy_loading_graphic( containerid ){
+function stop_loading_graphic( containerid ){
    var spinners = document.getElementById(containerid).getElementsByClassName("lds-dual-ring");
    while( spinners.length > 0 ) {
       spinners[0].remove();
@@ -79,6 +79,6 @@ function validIMGstring(str) {
     filter: "raw"
     obp_score: 4.108695652173912
     thumbnail_url: "http://localhost/bt/gili/wp-content/uploads/2019/08/image11-150x150.jpg"
-    post_url: ""
+    post_url: "https://google.com"
  }
  */

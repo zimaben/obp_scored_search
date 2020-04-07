@@ -1,3 +1,6 @@
+.obp_card {
+  min-height: 200px;
+}
 .lds-dual-ring {
     display: inline-block;
     width: 80px;

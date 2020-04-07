@@ -62,7 +62,7 @@ class Admin extends \ScoringEngine{
         $post_id = isset($_GET['post']) ? $_GET['post'] : false;
         //If not, is it a new post?
         if(!$post_id){
-            if( $_SERVER['PHP_SELF'] == '/wp-admin/post-new.php'){
+            if( strpos( $_SERVER['PHP_SELF'], '/wp-admin/post-new.php') !== false ){
                 global $post;
                 $post_id = $post->ID;
             }
@@ -170,7 +170,7 @@ class Admin extends \ScoringEngine{
         $steps = self::$score_base + 1; //allow for zero
         for($i=0;$i<$steps;$i++){
         ?>
-            <option value ="<?php echo $i .'"';if( $i == $value ) echo ' selected'; ?>"><?php echo $i; ?>
+            <option value ="<?php echo $i .'"';if( $i == $value ) echo ' selected'; ?>><?php echo $i; ?>
             </option>
         <?php 
         }

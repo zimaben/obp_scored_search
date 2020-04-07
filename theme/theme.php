@@ -57,37 +57,49 @@ class ScoreTheme extends \ScoringEngine {
         
         ?>
         <script>
-            var containerid = "<?php echo $obp_args['container_id'] ?>" ;
-            var loadingimg = "<?php echo self::$logo_url ?>";
-            jQuery.ajax({
-                type : "post",
-                dataType : "json",
-                url : obp_ajax_data.ajaxurl,
-                data : { action: "do_obp_scored_search", 
-                         args : <?php echo json_encode( $args ) ?>, 
-                         obpargs: <?php echo json_encode( $obp_args ) ?> ,
-                         nonce: obp_ajax_data.obp_ajax_nonce,
-                         postid: obp_ajax_data.post_id, },
-                beforeSend: function () { 
-                        render_loading_graphic( containerid, loadingimg ) },
-                success: function(response) {
-                    if(response.type == "success") {
-                        stop_loading_graphic ( containerid );
-                        console.log(response);
-                        jQuery.each(response, function(index, item) {
+            let containerid = "<?php echo $obp_args['container_id'] ?>" ;
+            let loadingimg = "<?php echo self::$logo_url ?>";
+            var request = new XMLHttpRequest();
+                //AJAX request type, url, & handler function
+                request.open('POST', obp_ajax_data.ajaxurl + '?action=do_obp_scored_search', true);
+                //AJAX dataType header 
+                request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+                //So we don't need to parse or decode later
+                request.responseType = 'json';
+            // @Todo...this is a somewhat rickety way to pass params. Switch to full JSON payload in the future
+            var params = 'args=' +  <?php echo "'" . base64_encode(serialize($args)) . "'" ?>;
+                params += '&obpargs=' + <?php echo "'" . base64_encode(serialize($obp_args)) . "'" ?>;
+                params += '&nonce=' + obp_ajax_data.obp_ajax_nonce;
+                params += '&postid=' + obp_ajax_data.post_id;   
+                        
+                //Start Spinner
+                request.onloadstart = function() {
+                    render_loading_graphic( containerid, loadingimg );
+                }
+                //Response received, render query results
+                request.onload = function() {
+                    stop_loading_graphic( containerid );
+                    if(request.response.type == "success") {
+                        //render functions at /build/js/scoring_engine.js
+                        for (let [index, item] of Object.entries(request.response)) {
 
                             render_related_posts( item, containerid );
-
-                        });
+                        }
+                            
                     } else {
                         if( obp_ajax_data.debug === 'true' ){
-                            if(typeof response.message !== 'undefined') {
-                                console.log( response.message );
+                            if(typeof request.response.message !== 'undefined') {
+                                console.log( request.response.message );
                             } else { console.log('No AJAX response from do_obp_scored_search'); }
                         }
                     }
                 }
-            }) 
+
+                request.ontimeout = () => {
+                    if( obp_ajax_data.debug === 'true' ) console.log('Request from do_obp_related_search timed out')
+                };
+
+                request.send( params );
 
         </script>
         <?php
