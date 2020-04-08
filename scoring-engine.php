@@ -46,6 +46,7 @@ if ( ! class_exists( 'ScoringEngine' ) ) {
         static $access_level = array( 'administrator' ); // roles that can edit scores
         static $logo_url = ''; //the logo image animated between searches (please use circular image)
         static $default_search = 'best'; //default either 'closest' or 'best'
+        static $query_size = -1; // the default is -1, which means query the whole DB for related posts before paring down
 
 
         /**

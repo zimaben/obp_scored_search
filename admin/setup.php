@@ -52,10 +52,10 @@ class Setup extends \ScoringEngine {
             'meta_box_cb'       => false,
         );
 
-        /*  */
+        /* Zero dependencies - no workflows */
         $this->register_taxonomy( 'obp_scores', self::$scored_posttypes, $scores_args )
-             ->addScript( self::js_domain , self::get_plugin_url('/build/js/' . self::js_domain . '.js'), array('theme-js'), self::version, false )
-             ->addStyle( self::js_domain , self::get_plugin_url('/build/css/' . self::js_domain . '.css'), array('theme-css'), self::version );
+             ->addScript( self::js_domain , self::get_plugin_url('/build/js/' . self::js_domain . '.js'), array(), self::version, false )
+             ->addStyle( self::js_domain , self::get_plugin_url('/build/css/' . self::js_domain . '.css'), array(), self::version );
 
     }
     private function actionAddMeta($function)

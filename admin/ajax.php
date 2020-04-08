@@ -95,26 +95,28 @@ class Ajax extends \ScoringEngine{
     public static function sort_related_best( $results, $related, $related_id )
     {
 
-        $base = 0;
+        $base = 0; 
 
         $index_array = array();
 
         $return_array = array();
         
-        foreach( $related as $key=>$val ){ //sum total score
+        foreach( $related as $key=>$val ){ // get the $base or total of all scores
           
             $base += $val; 
         
-        } 
-        
+        }; 
+        // get the average score
+        $average = $base / count( $related ); 
+
         foreach( $related as $key=>$val ){
          
-            $this_percentage = $val / $base;
+            #$this_percentage = $val / $base;
          
-            if( $this_percentage ) 
+            if( $val && $val > 0 ) 
          
             {  
-                $multiplier = 1 + $this_percentage;
+                $multiplier = $val / $average;
          
                 $index_array[$key] = $multiplier;
 
@@ -140,12 +142,12 @@ class Ajax extends \ScoringEngine{
                     {
                         $this_multiplier = $index_array[$k]; //get the value of the multiplier
                         
-                        $this_score = $v * $this_multiplier;
+                        $this_score = $v * $this_multiplier; 
 
                         if( $this_score ){ $result_score += $this_score; }
                     }
                     
-                }
+                }   
                 # get thumbnail image
                 $attachment_id = \get_post_thumbnail_id( $result->ID  );
 
@@ -171,6 +173,7 @@ class Ajax extends \ScoringEngine{
     }
     public static function sort_related_closest( $results, $related, $related_id )
     {
+
         $return_array = array();
 
         $all_terms = \get_terms( array( 
@@ -181,6 +184,10 @@ class Ajax extends \ScoringEngine{
         {
             if( intval( $result->ID ) !== intval( $related_id ) ) #strip related posts target from return of posts
             {
+                $origtitle = \get_the_title( $related_id );
+
+                $comparetitle = \get_the_title( $result->ID  );
+
                 $result_postmeta = self::get_scores( $result->ID );
 
                 $master_result_score = 100;
@@ -209,7 +216,7 @@ class Ajax extends \ScoringEngine{
 
             #weave the score and thumbnail property into the WP Post object
             $result = (object) array_merge( (array) $result, array( 
-                'obp_score' => $result_score,
+                'obp_score' => $master_result_score,
                 'thumbnail_url' => $thumb[0],
                 'post_url' => $post_url,
                 ) );
@@ -218,13 +225,16 @@ class Ajax extends \ScoringEngine{
             } 
         }
 
-        array_multisort (array_column($return_array, 'obp_score'), SORT_DESC, $return_array);
+       array_multisort (array_column($return_array, 'obp_score'), SORT_DESC, $return_array);
+
+
 
     return $return_array;       
     }
 
     public static function do_obp_scored_search(){
         #validation happens before ajax request is made so no need to check if the arguments are missing
+
         if ( !\wp_verify_nonce( $_POST['nonce'], "obp-ajax-data-nonce")) {
 
             $response = array( 'type' => 'failure', 'message' => 'do_obp_scored_search function failed nonce verification');
@@ -236,7 +246,17 @@ class Ajax extends \ScoringEngine{
         $the_args = unserialize(base64_decode( $_POST["args"] ));
         $obp_args = unserialize(base64_decode( $_POST['obpargs'] ));
 
+        //if numberposts has not been set, we fall back to posts_per_page (because it's an easy mistake to make)
+        //before using the default
+        if( !isset($the_args['numberposts']) ) {
+
+            $the_args["numberposts"] = isset($the_args['posts_per_page']) ? $the_args['posts_per_page'] : self::$query_size;
+        
+        }
+
+
         $the_search = \get_posts( $the_args  );
+        
         $related_score = self::get_scores( $obp_args['post_id'] );
 
         if( empty($related_score ) )
@@ -268,7 +288,7 @@ class Ajax extends \ScoringEngine{
                 break;
             
             case "closest":
-              
+
                 $new_results = self::sort_related_closest( $the_search, $related_score, $obp_args['post_id'] );
               
                 break;
@@ -281,9 +301,10 @@ class Ajax extends \ScoringEngine{
         }
         if( isset($obp_args['maximum_posts']))
         {
-            $new_results = array_slice($new_results, 0, intval( $obp_args['maximum_posts'] ) ); 
+           if( count($new_results) > intval( $obp_args['maximum_posts'] ) ) $new_results = array_slice($new_results, 0, intval( $obp_args['maximum_posts'] ) ); 
         }
         $new_results['type'] = "success";
+
         echo json_encode( $new_results );
         wp_die();  //ajax calls, like surf nazis, must die
 
