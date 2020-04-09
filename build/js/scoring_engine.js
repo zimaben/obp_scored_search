@@ -1,17 +1,18 @@
 function render_related_posts( post, containerid ){
    if( post !== 'success') { //don't attempt to render the success message
         var div = document.createElement('div');
-    
+
+        //add classes to the div containing each result - default Bootstrap Card layout
         div.classList.add( 'card', 'col-6', 'col-sm-4', 'col-md-3', 'card-' + post.post_type );
     
         div.id = 'post-' + post.ID;
-    
+        //basic markup template
         var markup = '<a href="' + post.post_url + '"><div class="card-body obp_card" style="background:url('+ post.thumbnail_url +') center/cover">';
     
         markup += '<h5 class="card-title">'+ post.post_title +'</h5></div>'; 
     
         div.innerHTML = markup;
-        console.log( containerid );
+
         document.getElementById(containerid).appendChild(div); 
    }
 }
